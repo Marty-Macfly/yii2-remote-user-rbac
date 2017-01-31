@@ -1,0 +1,27 @@
+{
+	"name": "macfly/yii2-remote-user-rbac",
+	"description": "Yii2 module to get user and rbac information from a remote api",
+	"keywords": ["yii2", "user", "rbac"],
+	"type": "yii2-extension",
+	"license": "BSD-3-Clause",
+	"support": {
+		"issues": "https://github.com/Marty-Macfly/yii2-remote-user-rbac/issues",
+		"source": "https://github.com/Marty-Macfly/yii2-remote-user-rbac"
+	},
+	"authors": [
+		{
+			"name": "Charles DELFLY",
+			"email": "c.delfly@linkbynet.com"
+		}
+	],
+	"minimum-stability": "stable",
+	"require": {
+    "yiisoft/yii2": "~2.0.5",
+    "yiisoft/yii2-httpclient": "~2.0.1"
+	},
+	"autoload": {
+		"psr-4": {
+			"macfly\\user\\": "src/"
+		}
+	}
+}

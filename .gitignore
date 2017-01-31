@@ -1,0 +1,4 @@
+# Exclude vim swp file
+.*.swp
+
+vendor/
