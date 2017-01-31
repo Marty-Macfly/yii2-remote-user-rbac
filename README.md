@@ -51,12 +51,15 @@ or
 
 ## Configuring to use rbac
 
-Configure **authManager** component as follows
+Configure **authManager** and **user** component as follows
 
 ```php
     'components' => [
             ................
-
+        'user' => [
+            'identityClass' => 'macfly\user\models\User',
+            'enableAutoLogin' => true,
+        ],
         'authManager' => [
             'class' => 'macfly\user\models\RbacManager',
         ],
