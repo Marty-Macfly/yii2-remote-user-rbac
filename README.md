@@ -21,48 +21,48 @@ or add
 
 to the require section of your `composer.json` file.
 
-Usage
+Configure
 ------------
 
-## Configuring to manage User Login in web interface
+> **NOTE:** Make sure that you don't have `user` component configuration in your config files.
 
 Configure **config/web.php** as follows
 
 ```php
+  'components' => [
+    ................
+    'authClientCollection' => [
+      'class'   => \yii\authclient\Collection::className(),
+      'clients' => [
+        'oauth2' => [
+          'class'           => 'macfly\authclient\OAuth2',
+          'authUrl'         => 'http://127.0.0.1:8888/oauth2/authorize',
+          'tokenUrl'        => 'http://127.0.0.1:8888/oauth2/token',
+          'apiBaseUrl'      => 'http://127.0.0.1:8888/oauth2',
+          'clientId'        => 'testclient',
+          'clientSecret'    => 'testpass',
+          'requestOptions'  => [
+            'sslVerifyPeer' => false,
+            'sslVerifyPeerName' => false,
+          ],
+        ],
+      ],
+    ],
+  ................
   'modules' => [
-            ................
+      ................
       'user'  => [
        'class'       => 'macfly\user\Module',
-       'rememberFor' => 1209600,													# Session life
-       'url_base'    => 'https://auth.provider.url.com',	# Base url of the auth provide
-       'url_login'   => 'user/security/login', 						# URL used to redirect if use of sso
-       'url_user'    => 'api/users', 											# WS route to get user information
-       'url_session' => 'api/session', 										# WS route to get session information
-       'url_rbac'    => 'api/access/update',							# Ws route to get role list of the user
-       'auth'        => 'sso',														# SSO you will be redirect on url_login for auth, login authentification while be done through form, user will need to log again
-       'login'       => 'xxxx',														# Use if access to WS are made through login and password
-       'password'    => 'xxxx',
-or
-       'key'         => 'xxxx',														# Auth to WS is made through API-KEY instead of login/password
+       'authclient'  => 'oauth2',
+       'rememberFor' => 1209600, # Session life (default: 1209600)
+       'identityUrl' => 'http://127.0.0.1:8888/user/api/identity', # (optional)
+       'rbacUrl'     => 'http://127.0.0.1:8888/user/api/rbac',     # (optional)
+#      'modelMap'    => [],
+#      'remoteModelMap' = [
+#         'app\models\User' => 'User',
+#       ],
       ],
-            ................
+      ................
   ],
 ```
 
-## Configuring to use rbac
-
-Configure **authManager** and **user** component as follows
-
-```php
-    'components' => [
-            ................
-        'user' => [
-            'identityClass' => 'macfly\user\models\User',
-            'enableAutoLogin' => true,
-        ],
-        'authManager' => [
-            'class' => 'macfly\user\models\RbacManager',
-        ],
-            ................
-  ],
-```

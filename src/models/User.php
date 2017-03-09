@@ -3,24 +3,186 @@
 namespace macfly\user\models;
 
 use Yii;
+use yii\base\Model;
+
 use macfly\user\Module;
 
-class User extends \yii\base\Object implements \yii\web\IdentityInterface
+class User extends Model implements \yii\web\IdentityInterface
 {
-	public $id;
-	public $username;
-	public $email;
+	public $attributeList = ['id', 'username', 'email'];
 	public $timezone;
 
-	public $accessToken;
+	/**
+	 * @var array attribute values indexed by attribute names
+	 */
+	private $_attributes = [];
 
-  public function __construct($data)
-  { 
-		foreach(['id', 'username', 'email', 'timezone'] as $var) {
-			if(array_key_exists($var, $data)) {
-				$this->$var	= $data[$var];
-			}
+	/**
+	* Returns the list of all attribute names of the record.
+	* @return array list of attribute names.
+	*/
+	public function attributes()
+	{
+		return $this->attributeList;
+	}
+
+	/**
+	 * Returns a value indicating whether the model has an attribute with the specified name.
+	 * @param string $name the name of the attribute
+	 * @return bool whether the model has an attribute with the specified name.
+	 */
+	public function hasAttribute($name)
+	{
+		return isset($this->_attributes[$name]) || in_array($name, $this->attributes(), true);
+	}
+
+	/**
+	 * Returns the named attribute value.
+	 * `null` will be returned.
+	 * @param string $name the attribute name
+	 * @return mixed the attribute value. `null` if the attribute is not set or does not exist.
+	 * @see hasAttribute()
+	 */
+	public function getAttribute($name)
+	{
+		return isset($this->_attributes[$name]) ? $this->_attributes[$name] : null;
+	}
+
+	/**
+	 * Sets the named attribute value.
+	 * @param string $name the attribute name
+	 * @param mixed $value the attribute value.
+	 * @throws InvalidParamException if the named attribute does not exist.
+	 * @see hasAttribute()
+	 */
+	public function setAttribute($name, $value)
+	{
+		if ($this->hasAttribute($name))
+		{
+			$this->_attributes[$name] = $value;
+		} else
+		{
+			throw new InvalidParamException(get_class($this) . ' has no attribute named "' . $name . '".');
 		}
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function canGetProperty($name, $checkVars = true, $checkBehaviors = true)
+	{
+		if (parent::canGetProperty($name, $checkVars, $checkBehaviors))
+		{
+			return true;
+		}
+
+		try
+		{
+			return $this->hasAttribute($name);
+		} catch (\Exception $e)
+		{
+			// `hasAttribute()` may fail on base/abstract classes in case automatic attribute list fetching used
+			return false;
+		}
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function canSetProperty($name, $checkVars = true, $checkBehaviors = true)
+	{
+		if (parent::canSetProperty($name, $checkVars, $checkBehaviors))
+		{
+			return true;
+		}
+
+		try
+		{
+			return $this->hasAttribute($name);
+		} catch (\Exception $e)
+		{
+			// `hasAttribute()` may fail on base/abstract classes in case automatic attribute list fetching used
+			return false;
+		}
+	}
+
+	/**
+	 * PHP getter magic method.
+	 * This method is overridden so that attributes and related objects can be accessed like properties.
+	 *
+	 * @param string $name property name
+	 * @throws \yii\base\InvalidParamException if relation name is wrong
+	 * @return mixed property value
+	 * @see getAttribute()
+	 */
+	public function __get($name)
+	{
+		if(isset($this->_attributes[$name]) || array_key_exists($name, $this->_attributes))
+		{
+			return $this->_attributes[$name];
+		} elseif($this->hasAttribute($name))
+		{
+			return null;
+		} else
+		{
+			return parent::__get($name);
+		}
+	}
+
+	/**
+	 * PHP setter magic method.
+	 * This method is overridden so that attributes can be accessed like properties.
+	 * @param string $name property name
+	 * @param mixed $value property value
+	 */
+	public function __set($name, $value)
+	{
+		if ($this->hasAttribute($name))
+		{
+			$this->_attributes[$name] = $value;
+		} else
+		{
+#			parent::__set($name, $value);
+		}
+	}
+
+	/**
+	 * Checks if a property value is null.
+	 * This method overrides the parent implementation by checking if the named attribute is `null` or not.
+	 * @param string $name the property name or the event name
+	 * @return bool whether the property value is null
+	 */
+	public function __isset($name)
+	{
+		try
+		{
+			return $this->__get($name) !== null;
+		} catch (\Exception $e)
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Sets a component property to be null.
+	 * This method overrides the parent implementation by clearing
+	 * the specified attribute value.
+	 * @param string $name the property name or the event name
+	 */
+	public function __unset($name)
+	{
+		if ($this->hasAttribute($name))
+		{
+			unset($this->_attributes[$name]);
+		} else
+		{
+			parent::__unset($name);
+		}
+	}
+
+  public function setTimezone($value)
+  { 
+		$this->timezone	= $value;
 
 		if(!is_null($this->timezone))
 		{
@@ -28,96 +190,34 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
 		}
   }
 
-	/**
-	 * @inheritdoc
-	 */
-	public static function findIdentity($id)
-	{
-		if(($data	= \Yii::$app->cache->get($id)) === false)
-		{
-			if(!\Yii::$app->hasModule('user'))
-			{
-				 throw new NotSupportedException('Module with id "user" not loaded');
-			}
+  protected static function request($method, $args = [])
+  {
+    $module = Module::getInstance();
+    return $module->identity($method, $args);
+  }
 
-			$module = \Yii::$app->getModule('user');
-			$rs     = $module->createRequest()
-									->setMethod('GET')
-									->setUrl(sprintf('%s/%d', $module->url_user, $id))
-									->addHeaders([
-										'Authorization' => 'Basic '. base64_encode(is_null($module->key) ?
-											sprintf("%s:%s", $module->login, $module->password) : sprintf("%s:", $module->key))])
-									->send();
+  public static function findIdentity($id)
+  {
+    return self::request('findIdentity', [$id]);
+  }
 
-			if($rs->isOk) {
-				$data	=	$rs->data;
-				\Yii::$app->cache->set($data['id'], $data, $module->rememberFor);
-			} else
-			{
-				return null;
-			}
-		}
-	
-		return new self($data);
-	}
+  public static function findIdentityByAccessToken($token, $type = null)
+  {
+    return self::request('findIdentityByAccessToken', [$token, $type]);
+  }
 
-	/**
-	 * @inheritdoc
-	 */
-	public static function findIdentityByAccessToken($token, $type = null)
-	{
-		return self::findByUsername($token);
-	}
+  public function getId()
+  {
+    return self::request('getId');
+  }
 
-	/**
-	 * Finds user by username
-	 *
-	 * @param string $username
-	 * @return static|null
-	 */
-	public static function findByUsername($username, $password = null)
-	{
-    if(!\Yii::$app->hasModule('user'))
-    {
-       throw new NotSupportedException('Module with id "user" not loaded');
-    }
+  public function getAuthKey()
+  {
+    return self::request('getAuthKey');
+  }
 
-    $module = \Yii::$app->getModule('user');
-		$rs			= $module->createRequest()
-								->setMethod('GET')
-								->setUrl($module->url_user)
-								->addHEaders(['Authorization' => 'Basic '.base64_encode(sprintf("%s:%s", $username, $password))])
-								->send();
-	
-		if($rs->isOk) {
-			\Yii::$app->cache->set($rs->data['id'], $rs->data, $module->rememberFor);
-			return new self($rs->data);
-		}
-
-	  return null;
-	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function getId()
-	{
-		return $this->id;
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function getAuthKey()
-	{
-		return sha1($this->id . 'Eipaih3V');
-	}
-	
-	/**
-	 * @inheritdoc
-	 */
-	public function validateAuthKey($authKey)
-	{
-		return $this->getAuthKey() === $authKey;
-	}
+  public function validateAuthKey($authKey)
+  {
+    return self::request('validateAuthKey', [$authKey]);
+  }
 }
