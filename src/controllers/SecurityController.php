@@ -1,6 +1,6 @@
 <?php
 
-namespace macfly\user\controllers;
+namespace macfly\user\client\controllers;
 
 use Yii;
 use yii\filters\AccessControl;
@@ -8,7 +8,7 @@ use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\authclient\AuthAction;
 
-use macfly\user\models\User;
+use macfly\user\client\models\User;
 
 class SecurityController extends Controller
 {
@@ -50,11 +50,10 @@ class SecurityController extends Controller
 
   public function login($client)
   {
-    $attributes = $client->getUserAttributes();
-
-		Yii::$app->cache->set($attributes['id'], $attributes, $this->module->rememberFor);
-
-		return Yii::$app->user->login(new User($attributes), 0);
+		$attributes						=	$client->getUserAttributes();
+		$attributes['class']	= $this->module->modelMap['User'];
+		$user									= Yii::createObject($attributes);
+		return Yii::$app->user->login($user, $this->module->rememberFor);
   }
 
   /**

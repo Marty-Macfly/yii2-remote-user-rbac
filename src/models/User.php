@@ -1,11 +1,11 @@
 <?php
 
-namespace macfly\user\models;
+namespace macfly\user\client\models;
 
 use Yii;
 use yii\base\Model;
 
-use macfly\user\Module;
+use macfly\user\client\Module;
 
 class User extends Model implements \yii\web\IdentityInterface
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace macfly\user;
+namespace macfly\user\client;
 
 use Yii;
 use yii\base\BootstrapInterface;
@@ -9,8 +9,8 @@ class Bootstrap implements BootstrapInterface
 {
 	/** @var array Model's map */
 	private $_modelMap = [
-		'User'				=> 'macfly\user\models\User',
-		'AuthManager'	=> 'macfly\user\models\RbacManager',
+		'User'				=> 'macfly\user\client\models\User',
+		'AuthManager'	=> 'macfly\user\client\models\RbacManager',
 	];
 
 	/** @inheritdoc */
@@ -23,7 +23,7 @@ class Bootstrap implements BootstrapInterface
 			$this->_modelMap = array_merge($this->_modelMap, $module->modelMap);
 			foreach ($this->_modelMap as $name => $definition)
 			{
-				$class										= "macfly\\user\\models\\" . $name;
+				$class										= "macfly\\user\\client\\models\\" . $name;
 
 				Yii::$container->set($class, $definition);
 
@@ -32,7 +32,7 @@ class Bootstrap implements BootstrapInterface
 			}			
 
 			if ($app instanceof ConsoleApplication) {
-				$module->controllerNamespace = 'macfly\user\commands';
+				$module->controllerNamespace = 'macfly\user\client\commands';
 			} else
 			{
 				$user	= [

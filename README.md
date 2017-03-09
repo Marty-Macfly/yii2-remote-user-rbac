@@ -52,7 +52,8 @@ Configure **config/web.php** as follows
   'modules' => [
       ................
       'user'  => [
-       'class'       => 'macfly\user\Module',
+       'class'       => 'macfly\user\client\Module',
+			 'cacheDuration' => 3600,
        'authclient'  => 'oauth2',
        'rememberFor' => 1209600, # Session life (default: 1209600)
        'identityUrl' => 'http://127.0.0.1:8888/user/api/identity', # (optional)

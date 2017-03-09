@@ -1,11 +1,11 @@
 <?php
 
-namespace macfly\user\models;
+namespace macfly\user\client\models;
 
 use Yii;
 use yii\helpers\ArrayHelper;
 
-use macfly\user\Module;
+use macfly\user\client\Module;
 
 class RbacManager implements \yii\rbac\ManagerInterface
 {

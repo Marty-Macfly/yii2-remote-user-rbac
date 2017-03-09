@@ -1,6 +1,6 @@
 <?php
 
-namespace macfly\user;
+namespace macfly\user\client;
 
 use Yii;
 use yii\base\NotSupportedException;
@@ -18,10 +18,13 @@ class Module extends \yii\base\Module
 		];
 
 	/** @var array Model map */
-	public $modelMap		= [];
+	public $modelMap			= [];
 
 	/** @var int The time you want the user will be remembered without asking for credentials. */
-	public $rememberFor	= 1209600; // two week
+	public $rememberFor		= 1209600; // two week
+
+	/** @var int|false The time you want api call to be cache (O = infinite, integer = nb of seconds, false no cache). */
+	public $cacheDuration	= false; // Disabled
 
 	public function identity($method, $args)
 	{
@@ -45,8 +48,12 @@ class Module extends \yii\base\Module
 
 	protected function request($method, $url, $args = [])
   {
-#		if(($arr = Yii::$app->cache->get($id)) === false)
-#		{
+		$id	= hash('sha256', json_encode([$url, $method, $args]));
+
+Yii::error("====> $id");
+
+		if(($arr = Yii::$app->cache->get($id)) === false)
+		{
 			$client = Yii::$app->get($this->clientCollection)->getClient($this->authclient);
 			$rq     = $client->createApiRequest()
 								->setMethod('PUT')
@@ -59,9 +66,13 @@ class Module extends \yii\base\Module
 				 throw new NotSupportedException(sprintf("Error requesting method '%s' : %s", $method, $rs->content));
 			}
 
-			$arr = $rs->data;
-#			Yii::$app->cache->set($arr['id'], $arr, $this->rememberFor);
-#		}
+			$arr		= $rs->data;
+
+			if($this->cacheDuration !== false)
+			{
+				Yii::$app->cache->set($id, $arr, $this->cacheDuration);
+			}
+		}
 
     if(is_array($arr) && array_key_exists('class', $arr))
     {
@@ -69,7 +80,7 @@ class Module extends \yii\base\Module
 			{
 				$arr['class']	= $this->modelMap[$this->remoteModelMap[$arr['class']]];
 			}
-      return \Yii::createObject($arr);
+      return Yii::createObject($arr);
     }
 
     return $arr;

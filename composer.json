@@ -20,10 +20,10 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"macfly\\user\\": "src/"
+			"macfly\\user\\client\\": "src/"
 		}
 	},
   "extra": {
-    "bootstrap": "macfly\\user\\Bootstrap"
+    "bootstrap": "macfly\\user\\client\\Bootstrap"
   }
 }
