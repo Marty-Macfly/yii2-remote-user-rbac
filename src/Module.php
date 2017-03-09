@@ -50,8 +50,6 @@ class Module extends \yii\base\Module
   {
 		$id	= hash('sha256', json_encode([$url, $method, $args]));
 
-Yii::error("====> $id");
-
 		if(($arr = Yii::$app->cache->get($id)) === false)
 		{
 			$client = Yii::$app->get($this->clientCollection)->getClient($this->authclient);
