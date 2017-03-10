@@ -186,7 +186,7 @@ class RbacManager implements \yii\rbac\ManagerInterface
 		return self::request('update', [$name, $object]);
 	}
 
-	protected static function request($method, $args = [])
+	protected static function request($method, $args = [], $cache = false)
 	{
 		foreach($args as $k => $obj)
 		{
@@ -199,6 +199,6 @@ class RbacManager implements \yii\rbac\ManagerInterface
 		}
 
     $module = Module::getInstance();
-    return $module->rbac($method, $args);
+    return $module->rbac($method, $args, $cache);
 	}
 }

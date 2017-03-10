@@ -26,31 +26,31 @@ class Module extends \yii\base\Module
 	/** @var int|false The time you want api call to be cache (O = infinite, integer = nb of seconds, false no cache). */
 	public $cacheDuration	= false; // Disabled
 
-	public function identity($method, $args)
+	public function identity($method, $args, $cache = false)
 	{
 		if(is_null($this->identityUrl))
 		{
        throw new NotSupportedException("Property 'identityUrl' not defined");
 		}
 
-		return $this->request($method, $this->identityUrl, $args);
+		return $this->request($method, $this->identityUrl, $args, $cache);
 	}
 
-	public function rbac($method, $args)
+	public function rbac($method, $args, $cache = false)
 	{
 		if(is_null($this->identityUrl))
 		{
        throw new NotSupportedException("Property 'rbacUrl' not defined");
 		}
 
-		return $this->request($method, $this->rbacUrl, $args);
+		return $this->request($method, $this->rbacUrl, $args, $cache);
 	}
 
-	protected function request($method, $url, $args = [])
+	protected function request($method, $url, $args = [], $cache = false)
   {
 		$id	= hash('sha256', json_encode([$url, $method, $args]));
 
-		if(($arr = Yii::$app->cache->get($id)) === false)
+		if(($arr = Yii::$app->cache->get($id)) === false || $cache !== false)
 		{
 			$client = Yii::$app->get($this->clientCollection)->getClient($this->authclient);
 			$rq     = $client->createApiRequest()
