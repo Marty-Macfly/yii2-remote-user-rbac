@@ -26,6 +26,8 @@ class Module extends \yii\base\Module
 	/** @var int|false The time you want api call to be cache (O = infinite, integer = nb of seconds, false no cache). */
 	public $cacheDuration	= false; // Disabled
 
+	protected $client			= null;
+
 	public function identity($method, $args, $cache = false)
 	{
 		if(is_null($this->identityUrl))
@@ -52,7 +54,13 @@ class Module extends \yii\base\Module
 
 		if(($arr = Yii::$app->cache->get($id)) === false || $cache !== false)
 		{
-			$client = Yii::$app->get($this->clientCollection)->getClient($this->authclient);
+			$client = is_null($this->client) ? Yii::$app->get($this->clientCollection)->getClient($this->authclient) : $this->client;
+
+			if(Yii::$app instanceof \yii\console\Application && empty($client->getAccessToken()))
+			{
+				$client->authenticateClient();
+			}
+
 			$rq     = $client->createApiRequest()
 								->setMethod('PUT')
 								->setUrl(sprintf("%s/%s", $url, $method))
