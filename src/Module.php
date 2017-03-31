@@ -56,7 +56,7 @@ class Module extends \yii\base\Module
 		{
 			$client = is_null($this->client) ? Yii::$app->get($this->clientCollection)->getClient($this->authclient) : $this->client;
 
-			if(Yii::$app instanceof \yii\console\Application && empty($client->getAccessToken()))
+			if(empty($client->getAccessToken()))
 			{
 				$client->authenticateClient();
 			}
