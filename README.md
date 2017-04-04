@@ -67,3 +67,23 @@ Configure **config/web.php** as follows
   ],
 ```
 
+Usage
+------------
+
+Authentication with HTTP Bearer token
+------------
+
+HttpBearerAuth is an action filter that supports the authentication method based on HTTP Bearer token.
+
+You may use HttpBearerAuth by attaching it as a behavior to a controller or module, like the following:
+
+```php
+public function behaviors()
+{
+    return [
+        'bearerAuth' => [
+            'class' => \macfly\user\client\filters\auth\HttpBearerAuth::className(),
+        ],
+    ];
+}
+```
