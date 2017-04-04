@@ -29,4 +29,3 @@ class HttpBearerAuth extends \yii\filters\auth\HttpBearerAuth
 		}
 	}
 }
-

@@ -104,8 +104,8 @@ class Module extends \yii\base\Module
 
 	public function setToken($token)
 	{
-		$client = $module->getClient();
-		$otoken  = new OAuthToken();
+		$client	= $this->getClient();
+		$otoken	= new OAuthToken();
 		$otoken->setToken($token);
 		return $client->setAccessToken($otoken);
 	}
