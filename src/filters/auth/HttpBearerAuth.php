@@ -5,7 +5,6 @@ namespace macfly\user\client\filters\auth;
 use macfly\user\client\Module;
 
 use Yii;
-use yii\authclient\OAuthToken;
 
 class HttpBearerAuth extends \yii\filters\auth\HttpBearerAuth
 {

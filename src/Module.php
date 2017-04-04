@@ -5,6 +5,7 @@ namespace macfly\user\client;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\helpers\ArrayHelper;
+use yii\authclient\OAuthToken;
 
 class Module extends \yii\base\Module
 {
