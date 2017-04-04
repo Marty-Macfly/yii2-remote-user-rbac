@@ -54,9 +54,9 @@ class Module extends \yii\base\Module
 
 		if(($arr = Yii::$app->cache->get($id)) === false || $cache !== false)
 		{
-			$client = is_null($this->client) ? Yii::$app->get($this->clientCollection)->getClient($this->authclient) : $this->client;
+			$client	= $this->getClient();
 
-			if(empty($client->getAccessToken()))
+			if(Yii::$app instanceof \yii\console\Application && empty($client->getAccessToken()))
 			{
 				$client->authenticateClient();
 			}
@@ -91,4 +91,22 @@ class Module extends \yii\base\Module
 
     return $arr;
   }
+
+  public function getClient()
+  {
+    if(is_null($this->client))
+    {
+      $this->client = Yii::$app->get($this->clientCollection)->getClient($this->authclient);
+    }
+
+    return $this->client;
+  }
+
+	public function setToken($token)
+	{
+		$client = $module->getClient();
+		$otoken  = new OAuthToken();
+		$otoken->setToken($token);
+		return $client->setAccessToken($otoken);
+	}
 }
