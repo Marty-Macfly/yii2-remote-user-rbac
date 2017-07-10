@@ -1,4 +1,11 @@
 # Exclude vim swp file
 .*.swp
 
+# phpstorm file
+.idea/
+
+# Composer
 vendor/
+composer.phar
+composer.lock
+

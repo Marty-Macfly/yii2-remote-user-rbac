@@ -9,7 +9,7 @@ class Bootstrap implements BootstrapInterface
 {
 	/** @var array Model's map */
 	private $_modelMap = [
-		'User'				=> 'macfly\user\client\models\User',
+		'User'			=> 'macfly\user\client\models\User',
 		'AuthManager'	=> 'macfly\user\client\models\RbacManager',
 	];
 
@@ -36,6 +36,7 @@ class Bootstrap implements BootstrapInterface
 			} else
 			{
 				$user	= [
+						'class'			=> 'app\components\User',
 						'loginUrl'	=> ['/user/security/auth', 'authclient' => $module->authclient],
 					];
 

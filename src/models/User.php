@@ -180,16 +180,6 @@ class User extends Model implements \yii\web\IdentityInterface
 		}
 	}
 
-  public function setTimezone($value)
-  { 
-		$this->timezone	= $value;
-
-		if(!is_null($this->timezone))
-		{
-			\Yii::$app->timeZone	=	$this->timezone;
-		}
-  }
-
   protected static function request($method, $args = [], $cache = false)
   {
     $module = Module::getInstance();
