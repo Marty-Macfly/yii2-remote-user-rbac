@@ -58,6 +58,7 @@ Configure **config/web.php** as follows
        'rememberFor' => 1209600, # Session life (default: 1209600)
        'identityUrl' => 'http://127.0.0.1:8888/user/api/identity', # (optional)
        'rbacUrl'     => 'http://127.0.0.1:8888/user/api/rbac',     # (optional)
+#			 'userComponent' => '',
 #      'modelMap'    => [],
 #      'remoteModelMap' = [
 #         'app\models\User' => 'User',
