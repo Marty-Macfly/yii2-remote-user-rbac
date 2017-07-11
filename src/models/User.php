@@ -10,7 +10,6 @@ use macfly\user\client\Module;
 class User extends Model implements \yii\web\IdentityInterface
 {
 	public $attributeList = ['id', 'username', 'email'];
-	public $timezone;
 
 	/**
 	 * @var array attribute values indexed by attribute names
