@@ -9,17 +9,17 @@ use yii\authclient\OAuthToken;
 
 class Module extends \yii\base\Module
 {
-    public $authclient				= null;
-    public $identityUrl				= null;
-    public $rbacUrl						= null;
-		public $userComponent			= null;
+    public $authclient			= null;
+    public $identityUrl			= null;
+    public $rbacUrl				= null;
+    public $userComponent		= null;
     public $clientCollection	= 'authClientCollection';
-    public $remoteModelMap		= [
+    public $remoteModelMap	    = [
         'app\models\User'	=> 'User',
     ];
 
     /** @var array Model map */
-    public $modelMap			= [];
+    public $modelMap		= [];
 
     /** @var int The time you want the user will be remembered without asking for credentials. */
     public $rememberFor		= 1209600; // two week
@@ -27,7 +27,7 @@ class Module extends \yii\base\Module
     /** @var int|false The time you want api call to be cache (O = infinite, integer = nb of seconds, false no cache). */
     public $cacheDuration	= false; // Disabled
 
-    protected $client			= null;
+    protected $client		= null;
 
     public function identity($method, $args, $cache = false)
     {
@@ -36,20 +36,20 @@ class Module extends \yii\base\Module
             throw new NotSupportedException("Property 'identityUrl' not defined");
         }
 
-        return $this->request($method, $this->identityUrl, $args, $cache);
+        return $this->request($method, $this->identityUrl, $args, $cache, false);
     }
 
-    public function rbac($method, $args, $cache = false)
+    public function rbac($method, $args, $cache = false, $rw = false)
     {
         if(is_null($this->identityUrl))
         {
             throw new NotSupportedException("Property 'rbacUrl' not defined");
         }
 
-        return $this->request($method, $this->rbacUrl, $args, $cache);
+        return $this->request($method, $this->rbacUrl, $args, $cache, $rw);
     }
 
-    protected function request($method, $url, $args = [], $cache = false)
+    protected function request($method, $url, $args = [], $cache = false, $rw = false)
     {
         $id	= hash('sha256', json_encode([$url, $method, $args]));
 
@@ -62,18 +62,18 @@ class Module extends \yii\base\Module
                 $client->authenticateClient();
             }
 
-            $rq     = $client->createApiRequest()
-                ->setMethod('PUT')
+            $rq = $client->createApiRequest()
+                ->setMethod($rw ? 'POST' : 'PUT')
                 ->setUrl(sprintf("%s/%s", $url, $method))
                 ->setData($args);
-            $rs			= $rq->send();
+            $rs = $rq->send();
 
             if(!$rs->isOk)
             {
                 throw new NotSupportedException(sprintf("Error requesting method '%s' : %s", $method, $rs->content));
             }
 
-            $arr		= $rs->data;
+            $arr = $rs->data;
 
             if($this->cacheDuration !== false)
             {
