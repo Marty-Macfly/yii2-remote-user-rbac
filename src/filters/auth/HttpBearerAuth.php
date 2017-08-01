@@ -16,9 +16,9 @@ class HttpBearerAuth extends \yii\filters\auth\HttpBearerAuth
 		$authHeader = $request->getHeaders()->get('Authorization');
 		if ($authHeader !== null && preg_match('/^Bearer\s+(.*?)$/', $authHeader, $matches))
 		{
-			$module		= Module::getInstance();
+			$module     = Module::getInstance();
 			$module->setToken($matches[1]);
-			$identity = $user->loginByAccessToken($matches[1], get_class($this));
+			$identity   = $user->loginByAccessToken($matches[1], get_class($this));
 
 			if ($identity === null)
 			{

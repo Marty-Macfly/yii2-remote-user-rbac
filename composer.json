@@ -16,14 +16,14 @@
 	],
 	"minimum-stability": "stable",
 	"require": {
-    "yiisoft/yii2": "~2.0.5"
+		"yiisoft/yii2": "~2.0.5"
 	},
 	"autoload": {
 		"psr-4": {
 			"macfly\\user\\client\\": "src/"
 		}
 	},
-  "extra": {
-    "bootstrap": "macfly\\user\\client\\Bootstrap"
-  }
+	"extra": {
+		"bootstrap": "macfly\\user\\client\\Bootstrap"
+	}
 }
