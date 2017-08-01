@@ -63,8 +63,8 @@ class Module extends \yii\base\Module
             }
 
             $rq = $client->createApiRequest()
-                ->setMethod($rw ? 'POST' : 'PUT')
-                ->setUrl(sprintf("%s/%s", $url, $method))
+                ->setMethod('PUT')
+                ->setUrl(sprintf("%s/%s/%s", $url, $rw ? 'write' : 'read', $method))
                 ->setData($args);
             $rs = $rq->send();
 

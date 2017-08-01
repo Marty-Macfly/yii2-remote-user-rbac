@@ -9,7 +9,7 @@ use macfly\user\client\Module;
 
 class RbacManager implements \yii\rbac\ManagerInterface
 {
-    public function add ($object)
+    public function add($object)
     {
         return self::write('add', [$object]);
     }
@@ -41,7 +41,7 @@ class RbacManager implements \yii\rbac\ManagerInterface
         return self::write('createPermission', [$name]);
     }
 
-    public function createRole ($name)
+    public function createRole($name)
     {
         $name =	sprintf("%s.%s", Yii::$app->name, $name);
         return self::write('createRole', [$name]);
