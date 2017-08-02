@@ -179,34 +179,33 @@ class User extends Model implements \yii\web\IdentityInterface
         }
     }
 
-    protected static function request($method, $args = [], $cache = false)
+    protected static function request($method, $args = [])
     {
-        $module = Module::getInstance();
-        return $module->identity($method, $args, $cache);
+        return Module::getInstance()->identity($method, $args);
     }
 
     public static function findIdentity($id)
     {
-        return self::request('findIdentity', [$id], true);
+        return self::request('findIdentity', [$id]);
     }
 
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        return self::request('findIdentityByAccessToken', [$token, $type], true);
+        return self::request('findIdentityByAccessToken', [$token, $type]);
     }
 
     public function getId()
     {
-        return self::request('getId', true);
+        return self::request('getId');
     }
 
     public function getAuthKey()
     {
-        return self::request('getAuthKey', true);
+        return self::request('getAuthKey');
     }
 
     public function validateAuthKey($authKey)
     {
-        return self::request('validateAuthKey', [$authKey], true);
+        return self::request('validateAuthKey', [$authKey]);
     }
 }

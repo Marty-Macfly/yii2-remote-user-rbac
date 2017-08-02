@@ -191,7 +191,7 @@ class RbacManager implements \yii\rbac\ManagerInterface
         return self::request($method, $args, false, true);
     }
 
-    protected static function read($method, $args = [], $cache = false)
+    protected static function read($method, $args = [], $cache = true)
     {
         return self::request($method, $args, $cache);
     }

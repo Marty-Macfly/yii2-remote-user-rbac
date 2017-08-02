@@ -29,14 +29,14 @@ class Module extends \yii\base\Module
 
     protected $client		= null;
 
-    public function identity($method, $args, $cache = false)
+    public function identity($method, $args)
     {
         if(is_null($this->identityUrl))
         {
             throw new NotSupportedException("Property 'identityUrl' not defined");
         }
 
-        return $this->request($method, $this->identityUrl, $args, $cache, false);
+        return $this->request($method, $this->identityUrl, $args, true, false);
     }
 
     public function rbac($method, $args, $cache = false, $rw = false)
