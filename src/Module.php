@@ -53,7 +53,7 @@ class Module extends \yii\base\Module
     {
         $id	= hash('sha256', json_encode([$url, $method, $args]));
 
-        if(($arr = Yii::$app->cache->get($id)) === false || $cache !== false)
+        if(($arr = Yii::$app->cache->get($id)) === false || $cache === false)
         {
             $client	= $this->getClient();
 
@@ -79,7 +79,10 @@ class Module extends \yii\base\Module
             {
                 Yii::$app->cache->set($id, $arr, $this->cacheDuration);
             }
-        }
+        } else
+				{
+					Yii::info(sprintf("Get id: %s => %s/%s/%s from cache", $id, $url, $rw ? 'write' : 'read', $method));
+				}
 
         if(is_array($arr) && array_key_exists('class', $arr))
         {
