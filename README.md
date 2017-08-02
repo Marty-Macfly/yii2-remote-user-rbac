@@ -82,7 +82,7 @@ You may use HttpBearerAuth by attaching it as a behavior to a controller or modu
 public function behaviors()
 {
     return [
-        'bearerAuth' => [
+        'authenticator' => [
             'class' => \macfly\user\client\filters\auth\HttpBearerAuth::className(),
         ],
     ];
