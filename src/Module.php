@@ -51,15 +51,18 @@ class Module extends \yii\base\Module
 
     protected function request($method, $url, $args = [], $cache = false, $rw = false)
     {
-        $id	= hash('sha256', json_encode([$url, $method, $args]));
+        $client = $this->getClient();
+        $token  = $client->getAccessToken();
+        $id     = hash('sha256', json_encode([$token, $url, $method, $args]));
 
         if(($arr = Yii::$app->cache->get($id)) === false || $cache === false)
         {
-            $client	= $this->getClient();
-
-            if(Yii::$app instanceof \yii\console\Application && empty($client->getAccessToken()))
+            Yii::info(sprintf("Cache id: %s => miss", $id));
+            if(Yii::$app instanceof \yii\console\Application && empty($token))
             {
                 $client->authenticateClient();
+                // Disable cache when use in CLI
+                $cache = false;
             }
 
             $rq = $client->createApiRequest()
@@ -75,14 +78,14 @@ class Module extends \yii\base\Module
 
             $arr = $rs->data;
 
-            if($this->cacheDuration !== false)
+            if($cache === true && $this->cacheDuration !== false)
             {
                 Yii::$app->cache->set($id, $arr, $this->cacheDuration);
             }
         } else
-				{
-					Yii::info(sprintf("Get id: %s => %s/%s/%s from cache", $id, $url, $rw ? 'write' : 'read', $method));
-				}
+        {
+            Yii::info(sprintf("Cache id: %s => hit for %s/%s/%s", $id, $url, $rw ? 'write' : 'read', $method));
+        }
 
         if(is_array($arr) && array_key_exists('class', $arr))
         {
