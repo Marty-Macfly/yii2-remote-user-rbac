@@ -13,10 +13,12 @@ class HttpBasicAuth extends \yii\filters\auth\HttpBasicAuth
      */
     public function authenticate($user, $request, $response)
     {
-        list($username, $password) = $request->getAuthCredentials();
+        $username = $request->getAuthUser();
 
-        if ($username !== null) {
-            return $this->check($username, $request, $response);
+        if ($this->auth) {
+            return parent::authenticate($user, $request, $response);
+        } elseif ($username !== null) {
+            return $this->check($username, $user, $request, $response);
         }
 
         return null;
