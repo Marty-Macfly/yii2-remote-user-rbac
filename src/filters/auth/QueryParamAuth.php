@@ -15,7 +15,7 @@ class QueryParamAuth extends \yii\filters\auth\QueryParamAuth
     {
         $accessToken = $request->get($this->tokenParam);
         if (is_string($accessToken)) {
-            return $this->check($accessToken, $request, $response);
+            return $this->check($accessToken, $user, $request, $response);
         }
     }
 }
