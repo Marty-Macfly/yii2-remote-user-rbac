@@ -88,3 +88,57 @@ public function behaviors()
     ];
 }
 ```
+
+Example of usage on a controller
+
+```bash
+curl --header 'Authorization: Bearer 0205ade34ff0b8dab4489059803add3fc9ba5c47' 'http://127.0.0.1:8888/api/publish'
+```
+
+Authentication with HTTP Basic Authentication
+------------
+
+HttpBasicAuth is an action filter that supports the HTTP Basic authentication method.
+
+You may use HttpBasicAuth by attaching it as a behavior to a controller or module, like the following:
+
+```php
+public function behaviors()
+{
+    return [
+        'authenticator' => [
+            'class' => \macfly\user\client\filters\auth\HttpBasicAuth::className(),
+        ],
+    ];
+}
+```
+
+Example of usage on a controller
+
+```bash
+curl 'http://0205ade34ff0b8dab4489059803add3fc9ba5c47:@127.0.0.1:8888/api/publish'
+```
+
+Authentication with Query Parameter Authentication
+------------
+
+QueryParamAuth is an action filter that supports the authentication based on the access token passed through a query parameter.
+
+You may use QueryParamAuth by attaching it as a behavior to a controller or module, like the following:
+
+```php
+public function behaviors()
+{
+    return [
+        'authenticator' => [
+            'class' => \macfly\user\client\filters\auth\QueryParamAuth::className(),
+        ],
+    ];
+}
+```
+
+Example of usage on a controller
+
+```bash
+curl 'http://127.0.0.1:8888/api/publish?access-token=0205ade34ff0b8dab4489059803add3fc9ba5c47'
+```
