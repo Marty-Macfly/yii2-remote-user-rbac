@@ -55,10 +55,16 @@ class Module extends \yii\base\Module
 
         if (($arr = Yii::$app->cache->get($id)) === false || $cache === false) {
             Yii::info(sprintf("Cache id: %s => miss", $id));
-            if (Yii::$app instanceof \yii\console\Application && empty($token)) {
-                $client->authenticateClient();
-                // Disable cache when use in CLI
-                $cache = false;
+            if (empty($token)) {
+                if (Yii::$app instanceof \yii\console\Application) {
+                    $client->authenticateClient();
+                    // Disable cache when use in CLI
+                    $cache = false;
+                } elseif (Yii::$app instanceof \yii\web\Application && Yii::$app->user->isGuest) {
+                    // redirect user to login page
+                    Yii::info("User is not logged in and we can't check is access right => redirect him to login page");
+                    return Yii::$app->user->loginRequired();
+                }
             }
 
             $rq = $client->createApiRequest()
@@ -71,12 +77,10 @@ class Module extends \yii\base\Module
                 if (ArrayHelper::keyExists('name', $rs->data)
                     && ArrayHelper::keyExists('message', $rs->data)
                     && ArrayHelper::keyExists('code', $rs->data)
-                    && ArrayHelper::keyExists('status', $rs->data)
-                    && ArrayHelper::keyExists('type', $rs->data)) {
+                    && ArrayHelper::keyExists('status', $rs->data)) {
                     throw Yii::createObject([
-                                        'class'      => $rs->data['type'],
-                                        'statusCode' => $rs->data['status']
-                                    ], [$rs->data['message'], $rs->data['code']]);
+                                        'class' => 'yii\web\HttpException',
+                                    ], [$rs->data['status'], $rs->data['message'], $rs->data['code']]);
                 } else {
                     throw new NotSupportedException(sprintf("Error requesting method '%s' : %s", $method, $rs->content));
                 }
